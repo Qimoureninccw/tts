@@ -1,5 +1,5 @@
 name = "tts-voice-magic"
-main = "index.html"
+main = "index.js"
 compatibility_date = "2024-01-15"
 compatibility_flags = ["nodejs_compat"]
 
