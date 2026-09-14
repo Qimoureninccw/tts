@@ -1447,7 +1447,7 @@ const DOCS_PAGE = `<!DOCTYPE html>
         <div class="topbar">
             <a href="/" class="logo">
                 <span>🎙️</span>
-                <span>VoiceCraft</span>
+                <span>SilenceTTSAPI</span>
             </a>
             <div class="nav-links">
                 <a href="/">首页</a>
@@ -1520,7 +1520,7 @@ const DOCS_PAGE = `<!DOCTYPE html>
             <pre><code>https://silence-tts-api.de5.net/create?txt=今天天气真好&amp;voice=zh-CN-XiaoxiaoNeural&amp;speed=1.0&amp;pitch=10&amp;style=cheerful</code></pre>
 
             <h3>4. 前端 audio 直接播放</h3>
-            <pre><code>&lt;audio controls src="https://silence-tts-api.de5.net/create?txt=欢迎使用VoiceCraft"&gt;&lt;/audio&gt;</code></pre>
+            <pre><code>&lt;audio controls src="https://silence-tts-api.de5.net/create?txt=欢迎使用SilenceTTSAPI"&gt;&lt;/audio&gt;</code></pre>
 
             <h3>5. JavaScript 调用</h3>
             <pre><code>const text = "你好，这是一段测试语音";
@@ -1628,7 +1628,7 @@ https.get(url, (res) =&gt; {
             </table>
 
             <div class="footer">
-                SilenceTTSAPI · Powered by VoiceCraft
+                SilenceTTSAPI · Powered by SilenceTTSAPI
             </div>
         </div>
     </div>
@@ -1793,7 +1793,7 @@ async function handleRequest(request) {
             });
         }
     }
-        // 文档页
+    // 文档页
     if (path === "/docs" || path === "/docs/") {
         return new Response(DOCS_PAGE, {
             headers: {
@@ -1802,7 +1802,9 @@ async function handleRequest(request) {
             }
         });
     }
-    return new Response("Not Found", { status: 404 });
+    return new Response("Not Found", {
+        status: 404
+    });
 }
 
 async function handleOptions(request) {
@@ -1816,7 +1818,9 @@ async function handleOptions(request) {
     });
 }
 
-function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function optimizedTextSplit(text, maxChunkSize = 1500) {
     const chunks = [];
@@ -1826,7 +1830,10 @@ function optimizedTextSplit(text, maxChunkSize = 1500) {
         const trimmedSentence = sentence.trim();
         if (!trimmedSentence) continue;
         if (trimmedSentence.length > maxChunkSize) {
-            if (currentChunk) { chunks.push(currentChunk.trim()); currentChunk = ''; }
+            if (currentChunk) {
+                chunks.push(currentChunk.trim());
+                currentChunk = '';
+            }
             for (let i = 0; i < trimmedSentence.length; i += maxChunkSize) {
                 chunks.push(trimmedSentence.slice(i, i + maxChunkSize));
             }
@@ -1874,7 +1881,10 @@ async function getVoice(text, voiceName = "zh-CN-XiaoxiaoNeural", rate = '+0%', 
         if (cleanText.length <= 1500) {
             const audioBlob = await getAudioChunk(cleanText, voiceName, rate, pitch, volume, style, outputFormat);
             return new Response(audioBlob, {
-                headers: { "Content-Type": "audio/mpeg", ...makeCORSHeaders() }
+                headers: {
+                    "Content-Type": "audio/mpeg",
+                    ...makeCORSHeaders()
+                }
             });
         }
 
@@ -1889,9 +1899,14 @@ async function getVoice(text, voiceName = "zh-CN-XiaoxiaoNeural", rate = '+0%', 
             chunks, voiceName, rate, pitch, volume, style, outputFormat, 3, 800
         );
 
-        const concatenatedAudio = new Blob(audioChunks, { type: 'audio/mpeg' });
+        const concatenatedAudio = new Blob(audioChunks, {
+            type: 'audio/mpeg'
+        });
         return new Response(concatenatedAudio, {
-            headers: { "Content-Type": "audio/mpeg", ...makeCORSHeaders() }
+            headers: {
+                "Content-Type": "audio/mpeg",
+                ...makeCORSHeaders()
+            }
         });
     } catch (error) {
         console.error("语音合成失败:", error);
@@ -1904,7 +1919,10 @@ async function getVoice(text, voiceName = "zh-CN-XiaoxiaoNeural", rate = '+0%', 
             }
         }), {
             status: 500,
-            headers: { "Content-Type": "application/json", ...makeCORSHeaders() }
+            headers: {
+                "Content-Type": "application/json",
+                ...makeCORSHeaders()
+            }
         });
     }
 }
@@ -2027,7 +2045,11 @@ async function getEndpoint() {
         const jwt = data.t.split(".")[1];
         const decodedJwt = JSON.parse(atob(jwt));
 
-        tokenInfo = { endpoint: data, token: data.t, expiredAt: decodedJwt.exp };
+        tokenInfo = {
+            endpoint: data,
+            token: data.t,
+            expiredAt: decodedJwt.exp
+        };
         return data;
     } catch (error) {
         console.error("获取endpoint失败:", error);
@@ -2050,7 +2072,12 @@ function makeCORSHeaders() {
 
 async function hmacSha256(key, data) {
     const cryptoKey = await crypto.subtle.importKey(
-        "raw", key, { name: "HMAC", hash: { name: "SHA-256" } }, false, ["sign"]
+        "raw", key, {
+            name: "HMAC",
+            hash: {
+                name: "SHA-256"
+            }
+        }, false, ["sign"]
     );
     const signature = await crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(data));
     return new Uint8Array(signature);
@@ -2067,7 +2094,9 @@ async function bytesToBase64(bytes) {
     return btoa(String.fromCharCode.apply(null, bytes));
 }
 
-function uuid() { return crypto.randomUUID().replace(/-/g, ""); }
+function uuid() {
+    return crypto.randomUUID().replace(/-/g, "");
+}
 
 async function sign(urlStr) {
     const url = urlStr.split("://")[1];
@@ -2098,33 +2127,88 @@ async function handleFileUpload(request) {
 
         if (!file) {
             return new Response(JSON.stringify({
-                error: { message: "未找到上传的文件", type: "invalid_request_error", param: "file", code: "missing_file" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "未找到上传的文件",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "missing_file"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         if (!file.type.includes('text/') && !file.name.toLowerCase().endsWith('.txt')) {
             return new Response(JSON.stringify({
-                error: { message: "不支持的文件类型，请上传txt文件", type: "invalid_request_error", param: "file", code: "invalid_file_type" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "不支持的文件类型，请上传txt文件",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "invalid_file_type"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         if (file.size > 500 * 1024) {
             return new Response(JSON.stringify({
-                error: { message: "文件大小超过限制（最大500KB）", type: "invalid_request_error", param: "file", code: "file_too_large" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "文件大小超过限制（最大500KB）",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "file_too_large"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         const text = await file.text();
         if (!text.trim()) {
             return new Response(JSON.stringify({
-                error: { message: "文件内容为空", type: "invalid_request_error", param: "file", code: "empty_file" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "文件内容为空",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "empty_file"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         if (text.length > 10000) {
             return new Response(JSON.stringify({
-                error: { message: "文本内容过长（最大10000字符）", type: "invalid_request_error", param: "file", code: "text_too_long" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "文本内容过长（最大10000字符）",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "text_too_long"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         let rate = parseInt(String((parseFloat(speed) - 1.0) * 100));
@@ -2142,8 +2226,19 @@ async function handleFileUpload(request) {
     } catch (error) {
         console.error("文件上传处理失败:", error);
         return new Response(JSON.stringify({
-            error: { message: "文件处理失败", type: "api_error", param: null, code: "file_processing_error" }
-        }), { status: 500, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+            error: {
+                message: "文件处理失败",
+                type: "api_error",
+                param: null,
+                code: "file_processing_error"
+            }
+        }), {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json",
+                ...makeCORSHeaders()
+            }
+        });
     }
 }
 
@@ -2151,15 +2246,37 @@ async function handleAudioTranscription(request) {
     try {
         if (request.method !== 'POST') {
             return new Response(JSON.stringify({
-                error: { message: "只支持POST方法", type: "invalid_request_error", param: "method", code: "method_not_allowed" }
-            }), { status: 405, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "只支持POST方法",
+                    type: "invalid_request_error",
+                    param: "method",
+                    code: "method_not_allowed"
+                }
+            }), {
+                status: 405,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         const contentType = request.headers.get("content-type") || "";
         if (!contentType.includes("multipart/form-data")) {
             return new Response(JSON.stringify({
-                error: { message: "请求必须使用multipart/form-data格式", type: "invalid_request_error", param: "content-type", code: "invalid_content_type" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "请求必须使用multipart/form-data格式",
+                    type: "invalid_request_error",
+                    param: "content-type",
+                    code: "invalid_content_type"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         const formData = await request.formData();
@@ -2168,17 +2285,39 @@ async function handleAudioTranscription(request) {
 
         if (!audioFile) {
             return new Response(JSON.stringify({
-                error: { message: "未找到音频文件", type: "invalid_request_error", param: "file", code: "missing_file" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "未找到音频文件",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "missing_file"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         if (audioFile.size > 10 * 1024 * 1024) {
             return new Response(JSON.stringify({
-                error: { message: "音频文件大小不能超过10MB", type: "invalid_request_error", param: "file", code: "file_too_large" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "音频文件大小不能超过10MB",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "file_too_large"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
-        const allowedTypes = ['audio/mpeg','audio/mp3','audio/wav','audio/m4a','audio/flac','audio/aac','audio/ogg','audio/webm','audio/amr','audio/3gpp'];
+        const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/flac', 'audio/aac', 'audio/ogg', 'audio/webm', 'audio/amr', 'audio/3gpp'];
         const isValidType = allowedTypes.some(type =>
             audioFile.type.includes(type) ||
             audioFile.name.toLowerCase().match(/\.(mp3|wav|m4a|flac|aac|ogg|webm|amr|3gp)$/i)
@@ -2186,8 +2325,19 @@ async function handleAudioTranscription(request) {
 
         if (!isValidType) {
             return new Response(JSON.stringify({
-                error: { message: "不支持的音频文件格式，请上传mp3、wav、m4a、flac、aac、ogg、webm、amr或3gp格式的文件", type: "invalid_request_error", param: "file", code: "invalid_file_type" }
-            }), { status: 400, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: "不支持的音频文件格式，请上传mp3、wav、m4a、flac、aac、ogg、webm、amr或3gp格式的文件",
+                    type: "invalid_request_error",
+                    param: "file",
+                    code: "invalid_file_type"
+                }
+            }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         const token = customToken || 'sk-wtldsvuprmwltxpbspbmawtolbacghzawnjhtlzlnujjkfhh';
@@ -2198,7 +2348,9 @@ async function handleAudioTranscription(request) {
 
         const apiResponse = await fetch('https://api.siliconflow.cn/v1/audio/transcriptions', {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
             body: apiFormData
         });
 
@@ -2211,18 +2363,43 @@ async function handleAudioTranscription(request) {
             else if (apiResponse.status === 413) errorMessage = '音频文件太大，请选择较小的文件';
 
             return new Response(JSON.stringify({
-                error: { message: errorMessage, type: "api_error", param: null, code: "transcription_api_error" }
-            }), { status: apiResponse.status, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+                error: {
+                    message: errorMessage,
+                    type: "api_error",
+                    param: null,
+                    code: "transcription_api_error"
+                }
+            }), {
+                status: apiResponse.status,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
         }
 
         const transcriptionResult = await apiResponse.json();
         return new Response(JSON.stringify(transcriptionResult), {
-            headers: { "Content-Type": "application/json", ...makeCORSHeaders() }
+            headers: {
+                "Content-Type": "application/json",
+                ...makeCORSHeaders()
+            }
         });
     } catch (error) {
         console.error("语音转录处理失败:", error);
         return new Response(JSON.stringify({
-            error: { message: "语音转录处理失败", type: "api_error", param: null, code: "transcription_processing_error" }
-        }), { status: 500, headers: { "Content-Type": "application/json", ...makeCORSHeaders() } });
+            error: {
+                message: "语音转录处理失败",
+                type: "api_error",
+                param: null,
+                code: "transcription_processing_error"
+            }
+        }), {
+            status: 500,
+            headers: {
+                "Content-Type": "application/json",
+                ...makeCORSHeaders()
+            }
+        });
     }
 }
