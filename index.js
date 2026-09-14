@@ -396,6 +396,17 @@ const HTML_PAGE = `<!DOCTYPE html>
                 <div class="badge"><span>🆓</span><span data-i18n="header.feature3">Completely Free</span></div>
                 <div class="badge"><span>📱</span><span data-i18n="header.feature4">Download Support</span></div>
             </div>
+            <div style="text-align:center; margin-bottom:32px;">
+    <a href="/docs" style="
+        display:inline-flex; align-items:center; gap:8px;
+        padding:12px 28px; background:#fff; color:#2563eb;
+        border:2px solid #2563eb; border-radius:60px;
+        font-weight:600; text-decoration:none; font-size:0.95rem;
+        box-shadow:0 4px 14px -4px rgba(37,99,235,0.3);
+    ">
+        📖 查看 API 文档
+    </a>
+</div>
         </div>
 
         <!-- 模式切换 -->
