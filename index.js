@@ -390,23 +390,26 @@ const HTML_PAGE = `<!DOCTYPE html>
         <div class="hero">
             <h1 data-i18n="header.title">SilenceTTSAPI</h1>
             <p class="subtitle" data-i18n="header.subtitle">AI-Powered Voice Processing Platform</p>
-            <div class="feature-badges">
+                        <div class="feature-badges">
                 <div class="badge"><span>✨</span><span data-i18n="header.feature1">20+ Voice Options</span></div>
                 <div class="badge"><span>⚡</span><span data-i18n="header.feature2">Lightning Fast</span></div>
                 <div class="badge"><span>🆓</span><span data-i18n="header.feature3">Completely Free</span></div>
                 <div class="badge"><span>📱</span><span data-i18n="header.feature4">Download Support</span></div>
             </div>
-            <div style="text-align:center; margin-bottom:32px;">
-    <a href="/docs" style="
-        display:inline-flex; align-items:center; gap:8px;
-        padding:12px 28px; background:#fff; color:#2563eb;
-        border:2px solid #2563eb; border-radius:60px;
-        font-weight:600; text-decoration:none; font-size:0.95rem;
-        box-shadow:0 4px 14px -4px rgba(37,99,235,0.3);
-    ">
-        📖 查看 API 文档
-    </a>
-</div>
+
+            <div style="margin-top: 32px;">
+                <a href="/docs" style="
+                    display: inline-flex; align-items: center; gap: 8px;
+                    padding: 12px 28px; background: #fff; color: #2563eb;
+                    border: 2px solid #2563eb; border-radius: 60px;
+                    font-weight: 600; text-decoration: none; font-size: 0.95rem;
+                    box-shadow: 0 4px 14px -4px rgba(37,99,235,0.3);
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='#2563eb';this.style.color='#fff';"
+                   onmouseout="this.style.background='#fff';this.style.color='#2563eb';">
+                    📖 查看 API 文档
+                </a>
+            </div>
         </div>
 
         <!-- 模式切换 -->
