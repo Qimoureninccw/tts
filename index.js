@@ -1202,7 +1202,69 @@ async function handleRequest(request) {
             });
         }
     }
+    // 新增：GET /create?txt=文本  → 直接返回 mp3 音频
+    if (path === "/create") {
+        try {
+            const txt = requestUrl.searchParams.get("txt") || "";
+            const cleanText = txt.trim();
 
+            if (!cleanText) {
+                return new Response(JSON.stringify({
+                    error: {
+                        message: "缺少参数 txt",
+                        type: "invalid_request_error",
+                        param: "txt",
+                        code: "missing_txt"
+                    }
+                }), {
+                    status: 400,
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...makeCORSHeaders()
+                    }
+                });
+            }
+
+            // 固定使用默认音色（以后可以扩展 ?voice=&speed= 等）
+            const voice = requestUrl.searchParams.get("voice") || "zh-CN-XiaoxiaoNeural";
+            const speed = requestUrl.searchParams.get("speed") || "1.0";
+            const pitch = requestUrl.searchParams.get("pitch") || "0";
+            const style = requestUrl.searchParams.get("style") || "general";
+
+            let rate = parseInt(String((parseFloat(speed) - 1.0) * 100));
+            let numPitch = parseInt(pitch);
+            const volume = 0;
+            let numVolume = 0;
+
+            const response = await getVoice(
+                cleanText,
+                voice,
+                rate >= 0 ? `+${rate}%` : `${rate}%`,
+                numPitch >= 0 ? `+${numPitch}Hz` : `${numPitch}Hz`,
+                numVolume >= 0 ? `+${numVolume}%` : `${numVolume}%`,
+                style,
+                "audio-24khz-48kbitrate-mono-mp3"
+            );
+
+            return response;
+        } catch (error) {
+            console.error("GET /create error:", error);
+            return new Response(JSON.stringify({
+                error: {
+                    message: error.message || String(error),
+                    type: "api_error",
+                    param: null,
+                    code: "create_error"
+                }
+            }), {
+                status: 500,
+                headers: {
+                    "Content-Type": "application/json",
+                    ...makeCORSHeaders()
+                }
+            });
+        }
+    }
     return new Response("Not Found", { status: 404 });
 }
 
