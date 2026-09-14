@@ -1106,6 +1106,523 @@ const HTML_PAGE = `<!DOCTYPE html>
     </script>
 </body>
 </html>`;
+// ==================== 文档页模板 ====================
+const DOCS_PAGE = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilenceTTSAPI · 接口文档</title>
+    <meta name="description" content="SilenceTTSAPI 官方接口文档，一行 URL 即可调用 AI 语音合成。">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-page: #f8fafc;
+            --surface: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #0f172a;
+            --code-text: #e2e8f0;
+            --inline-code-bg: #f1f5f9;
+            --inline-code-text: #be123c;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-page);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            padding: 40px 20px 80px;
+        }
+
+        .layout {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 顶部导航 */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 16px 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        .topbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .topbar .logo span:first-child {
+            font-size: 1.4rem;
+        }
+
+        .topbar .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .topbar .nav-links a {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .topbar .nav-links a:hover {
+            background: var(--bg-page);
+            color: var(--primary);
+        }
+
+        .topbar .nav-links a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 主内容 */
+        .doc-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            padding: 48px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .doc-card > p:first-of-type {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-primary);
+            scroll-margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-page);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* 行内代码 */
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            padding: 2px 8px;
+            background: var(--inline-code-bg);
+            color: var(--inline-code-text);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* 代码块 */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 16px 0 24px;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            line-height: 1.7;
+            position: relative;
+            box-shadow: var(--shadow-md);
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+            border-radius: 0;
+        }
+
+        /* 提示框 */
+        blockquote {
+            border-left: 4px solid var(--primary);
+            background: #eff6ff;
+            padding: 16px 20px;
+            margin: 16px 0 24px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            color: var(--text-secondary);
+        }
+
+        blockquote p { margin: 0; }
+
+        /* 链接 */
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.15s ease;
+        }
+
+        a:hover {
+            border-bottom-color: var(--primary);
+        }
+
+        /* 列表 */
+        ul, ol {
+            margin: 12px 0 20px 24px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        li code {
+            font-size: 0.8em;
+        }
+
+        /* 目录 */
+        .toc {
+            background: var(--bg-page);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            margin-bottom: 40px;
+        }
+
+        .toc-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px 16px;
+        }
+
+        .toc li { margin: 0; }
+
+        .toc a {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            border-bottom: none;
+            display: block;
+            padding: 4px 0;
+        }
+
+        .toc a:hover { color: var(--primary); }
+
+        /* 底部 */
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body { padding: 16px 12px 60px; }
+            .doc-card { padding: 24px; }
+            h1 { font-size: 1.6rem; }
+            h2 { font-size: 1.25rem; }
+            .topbar { flex-direction: column; gap: 12px; padding: 12px 16px; }
+            .toc ul { grid-template-columns: 1fr; }
+            pre { padding: 16px; font-size: 0.8rem; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <div class="topbar">
+            <a href="/" class="logo">
+                <span>🎙️</span>
+                <span>VoiceCraft</span>
+            </a>
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="/docs" class="active">API 文档</a>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <h1>SilenceTTSAPI 使用文档</h1>
+            <p>AI 驱动的语音合成 API，一次请求返回 mp3 音频流。</p>
+
+            <nav class="toc">
+                <div class="toc-title">目录</div>
+                <ul>
+                    <li><a href="#basic">基础信息</a></li>
+                    <li><a href="#endpoint">接口说明</a></li>
+                    <li><a href="#examples">调用示例</a></li>
+                    <li><a href="#voices">音色表</a></li>
+                    <li><a href="#styles">风格表</a></li>
+                    <li><a href="#notes">注意事项</a></li>
+                    <li><a href="#errors">错误码</a></li>
+                </ul>
+            </nav>
+
+            <h2 id="basic">基础信息</h2>
+            <table>
+                <tr><th>项目</th><th>说明</th></tr>
+                <tr><td>名称</td><td>SilenceTTSAPI</td></tr>
+                <tr><td>Base URL</td><td><code>https://silence-tts-api.de5.net/</code></td></tr>
+                <tr><td>请求方式</td><td><code>GET</code></td></tr>
+                <tr><td>返回格式</td><td><code>audio/mpeg</code>（mp3 音频流）</td></tr>
+                <tr><td>CORS</td><td>已开启，支持跨域</td></tr>
+                <tr><td>鉴权</td><td>无需鉴权</td></tr>
+            </table>
+
+            <h2 id="endpoint">接口：文字转语音</h2>
+            <pre><code>GET /create?txt=文本</code></pre>
+
+            <h3>请求参数</h3>
+            <table>
+                <tr><th>参数</th><th>必填</th><th>类型</th><th>默认值</th><th>说明</th></tr>
+                <tr><td><code>txt</code></td><td>是</td><td>string</td><td>—</td><td>要转换的文本内容</td></tr>
+                <tr><td><code>voice</code></td><td>否</td><td>string</td><td><code>zh-CN-XiaoxiaoNeural</code></td><td>音色，见下方音色表</td></tr>
+                <tr><td><code>speed</code></td><td>否</td><td>number</td><td><code>1.0</code></td><td>语速，范围 <code>0.5</code> ~ <code>2.0</code></td></tr>
+                <tr><td><code>pitch</code></td><td>否</td><td>number</td><td><code>0</code></td><td>音调，范围 <code>-50</code> ~ <code>50</code></td></tr>
+                <tr><td><code>style</code></td><td>否</td><td>string</td><td><code>general</code></td><td>语音风格，见下方风格表</td></tr>
+            </table>
+
+            <h3>返回</h3>
+            <p><strong>成功</strong>：<code>audio/mpeg</code> 二进制音频流（mp3）</p>
+            <p><strong>失败</strong>：JSON 错误信息</p>
+            <pre><code>{
+  "error": {
+    "message": "缺少参数 txt",
+    "type": "invalid_request_error",
+    "param": "txt",
+    "code": "missing_txt"
+  }
+}</code></pre>
+
+            <h2 id="examples">调用示例</h2>
+
+            <h3>1. 最简用法</h3>
+            <pre><code>https://silence-tts-api.de5.net/create?txt=你好世界</code></pre>
+
+            <h3>2. 指定音色和语速</h3>
+            <pre><code>https://silence-tts-api.de5.net/create?txt=你好世界&amp;voice=zh-CN-YunxiNeural&amp;speed=1.2</code></pre>
+
+            <h3>3. 带音调和风格</h3>
+            <pre><code>https://silence-tts-api.de5.net/create?txt=今天天气真好&amp;voice=zh-CN-XiaoxiaoNeural&amp;speed=1.0&amp;pitch=10&amp;style=cheerful</code></pre>
+
+            <h3>4. 前端 audio 直接播放</h3>
+            <pre><code>&lt;audio controls src="https://silence-tts-api.de5.net/create?txt=欢迎使用VoiceCraft"&gt;&lt;/audio&gt;</code></pre>
+
+            <h3>5. JavaScript 调用</h3>
+            <pre><code>const text = "你好，这是一段测试语音";
+const url = \`https://silence-tts-api.de5.net/create?txt=\${encodeURIComponent(text)}&amp;voice=zh-CN-YunxiNeural\`;
+
+const audio = new Audio(url);
+audio.play();</code></pre>
+
+            <h3>6. 下载音频</h3>
+            <pre><code>const text = "要下载的内容";
+const url = \`https://silence-tts-api.de5.net/create?txt=\${encodeURIComponent(text)}\`;
+
+const a = document.createElement('a');
+a.href = url;
+a.download = 'speech.mp3';
+a.click();</code></pre>
+
+            <h3>7. curl 命令行</h3>
+            <pre><code>curl "https://silence-tts-api.de5.net/create?txt=你好世界" -o output.mp3</code></pre>
+
+            <h3>8. Python 示例</h3>
+            <pre><code>import requests
+
+url = "https://silence-tts-api.de5.net/create"
+params = {
+    "txt": "你好，这是Python调用的测试",
+    "voice": "zh-CN-XiaoxiaoNeural",
+    "speed": 1.0,
+    "style": "cheerful"
+}
+
+resp = requests.get(url, params=params)
+with open("output.mp3", "wb") as f:
+    f.write(resp.content)</code></pre>
+
+            <h3>9. Node.js 示例</h3>
+            <pre><code>const fs = require('fs');
+const https = require('https');
+
+const text = encodeURIComponent('你好，这是Node.js调用的测试');
+const url = \`https://silence-tts-api.de5.net/create?txt=\${text}&amp;voice=zh-CN-YunxiNeural\`;
+
+https.get(url, (res) =&gt; {
+  const file = fs.createWriteStream('output.mp3');
+  res.pipe(file);
+  file.on('finish', () =&gt; file.close());
+});</code></pre>
+
+            <h2 id="voices">音色表（voice）</h2>
+            <table>
+                <tr><th>值</th><th>说明</th></tr>
+                <tr><td><code>zh-CN-XiaoxiaoNeural</code></td><td>晓晓（女声·温柔）默认</td></tr>
+                <tr><td><code>zh-CN-YunxiNeural</code></td><td>云希（男声·清朗）</td></tr>
+                <tr><td><code>zh-CN-YunyangNeural</code></td><td>云扬（男声·阳光）</td></tr>
+                <tr><td><code>zh-CN-XiaoyiNeural</code></td><td>晓伊（女声·甜美）</td></tr>
+                <tr><td><code>zh-CN-YunjianNeural</code></td><td>云健（男声·稳重）</td></tr>
+                <tr><td><code>zh-CN-XiaochenNeural</code></td><td>晓辰（女声·知性）</td></tr>
+                <tr><td><code>zh-CN-XiaohanNeural</code></td><td>晓涵（女声·优雅）</td></tr>
+                <tr><td><code>zh-CN-XiaomengNeural</code></td><td>晓梦（女声·梦幻）</td></tr>
+                <tr><td><code>zh-CN-XiaomoNeural</code></td><td>晓墨（女声·文艺）</td></tr>
+                <tr><td><code>zh-CN-XiaoqiuNeural</code></td><td>晓秋（女声·成熟）</td></tr>
+                <tr><td><code>zh-CN-XiaoruiNeural</code></td><td>晓睿（女声·智慧）</td></tr>
+                <tr><td><code>zh-CN-XiaoshuangNeural</code></td><td>晓双（女声·活泼）</td></tr>
+                <tr><td><code>zh-CN-XiaoxuanNeural</code></td><td>晓萱（女声·清新）</td></tr>
+                <tr><td><code>zh-CN-XiaoyanNeural</code></td><td>晓颜（女声·柔美）</td></tr>
+                <tr><td><code>zh-CN-XiaoyouNeural</code></td><td>晓悠（女声·悠扬）</td></tr>
+                <tr><td><code>zh-CN-XiaozhenNeural</code></td><td>晓甄（女声·端庄）</td></tr>
+                <tr><td><code>zh-CN-YunfengNeural</code></td><td>云枫（男声·磁性）</td></tr>
+                <tr><td><code>zh-CN-YunhaoNeural</code></td><td>云皓（男声·豪迈）</td></tr>
+                <tr><td><code>zh-CN-YunxiaNeural</code></td><td>云夏（男声·热情）</td></tr>
+                <tr><td><code>zh-CN-YunyeNeural</code></td><td>云野（男声·野性）</td></tr>
+                <tr><td><code>zh-CN-YunzeNeural</code></td><td>云泽（男声·深沉）</td></tr>
+            </table>
+
+            <h2 id="styles">风格表（style）</h2>
+            <table>
+                <tr><th>值</th><th>说明</th></tr>
+                <tr><td><code>general</code></td><td>通用风格（默认）</td></tr>
+                <tr><td><code>assistant</code></td><td>智能助手</td></tr>
+                <tr><td><code>chat</code></td><td>聊天对话</td></tr>
+                <tr><td><code>customerservice</code></td><td>客服专业</td></tr>
+                <tr><td><code>newscast</code></td><td>新闻播报</td></tr>
+                <tr><td><code>affectionate</code></td><td>亲切温暖</td></tr>
+                <tr><td><code>calm</code></td><td>平静舒缓</td></tr>
+                <tr><td><code>cheerful</code></td><td>愉快欢乐</td></tr>
+                <tr><td><code>gentle</code></td><td>温和柔美</td></tr>
+                <tr><td><code>lyrical</code></td><td>抒情诗意</td></tr>
+                <tr><td><code>serious</code></td><td>严肃正式</td></tr>
+            </table>
+
+            <h2 id="notes">注意事项</h2>
+            <ol>
+                <li><strong>URL 编码</strong>：中文文本建议用 <code>encodeURIComponent()</code> 编码，尤其是通过 JS 调用时。</li>
+                <li><strong>长文本</strong>：支持长文本（内部自动分块），但建议单次不超过 10000 字，避免超时。</li>
+                <li><strong>参数优先级</strong>：不传参数时使用默认值，传了就用传入的值。</li>
+                <li><strong>返回类型</strong>：永远是 mp3，<code>Content-Type</code> 为 <code>audio/mpeg</code>。</li>
+            </ol>
+
+            <h2 id="errors">错误码</h2>
+            <table>
+                <tr><th>HTTP 状态码</th><th>说明</th></tr>
+                <tr><td><code>200</code></td><td>成功，返回 mp3 音频流</td></tr>
+                <tr><td><code>400</code></td><td>参数错误（如缺少 <code>txt</code>）</td></tr>
+                <tr><td><code>500</code></td><td>服务器内部错误（如合成失败）</td></tr>
+            </table>
+
+            <div class="footer">
+                SilenceTTSAPI · Powered by VoiceCraft
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
 
 // ==================== Worker 入口 ====================
 export default {
@@ -1264,6 +1781,15 @@ async function handleRequest(request) {
                 }
             });
         }
+    }
+        // 文档页
+    if (path === "/docs" || path === "/docs/") {
+        return new Response(DOCS_PAGE, {
+            headers: {
+                "Content-Type": "text/html; charset=utf-8",
+                ...makeCORSHeaders()
+            }
+        });
     }
     return new Response("Not Found", { status: 404 });
 }
